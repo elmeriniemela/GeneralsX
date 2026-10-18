@@ -1644,7 +1644,7 @@ void W3DVolumetricShadow::SetGeometry( W3DShadowGeometry *geometry )
 		{
 
 			deleteSilhouette(i);
-			if( allocateSilhouette(i, numNewVertices ) == FALSE )
+			if( allocateSilhouette(i, numNewVertices, geometry->getMesh(i)->GetNumPolygon() ) == FALSE )
 				return;
 
 		}
@@ -3174,9 +3174,12 @@ void W3DVolumetricShadow::resetShadowVolume( Int volumeIndex, Int meshIndex )
 // accommodate that as a series of disjoint edge pairs, otherwise known
 // as numVertices * 2
 // ============================================================================
-Bool W3DVolumetricShadow::allocateSilhouette(Int meshIndex, Int numVertices )
+Bool W3DVolumetricShadow::allocateSilhouette(Int meshIndex, Int numVertices, Int numPolygons )
 {
-	Int numEntries = numVertices * 5;	///@todo: HACK, HACK... Should be 2!
+	// TheSuperHackers @bugfix elmeriniemela 18/10/2026 Fixes buffer overflows in the silhouette and the shadow volume.
+	// buildSilhouette() adds up to 3 edges (6 indices) per polygon, for example for polygons without neighbors,
+	// which can exceed numVertices * 5. allocateShadowVolume() sizes the shadow volume from this capacity too.
+	Int numEntries = MAX( numVertices * 5, numPolygons * 6 );
 
 	// sanity
 	assert( m_silhouetteIndex[meshIndex] == nullptr &&
