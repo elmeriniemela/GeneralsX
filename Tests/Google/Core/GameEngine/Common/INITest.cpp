@@ -48,8 +48,9 @@ TEST(INI, OversizedIntegersMatchLegacyParser)
 		SCOPED_TRACE(test.token);
 		EXPECT_EQ(INI::scanInt(test.token), test.signedExpected);
 		EXPECT_EQ(INI::scanUnsignedInt(test.token), test.unsignedExpected);
-#ifdef _WIN32
+#ifdef _MSC_VER
 		// Characterize the Windows CRT; out-of-range scanf conversions are not portable.
+		// MinGW-w64 is excluded because its std::sscanf is its own C99 implementation, not the CRT one.
 		Int legacySigned;
 		UnsignedInt legacyUnsigned;
 		ASSERT_EQ(std::sscanf(test.token, "%d", &legacySigned), 1);

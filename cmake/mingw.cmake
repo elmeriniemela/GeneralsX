@@ -14,9 +14,9 @@ if(MINGW)
     # Windows subsystem
     add_link_options(-mwindows)
 
-    # Static linking of GCC runtime libraries
-    # This embeds libgcc and libstdc++ into the executable to avoid DLL dependencies
-    add_link_options(-static-libgcc -static-libstdc++)
+    # Static linking of the MinGW-w64 runtime libraries
+    # This embeds libgcc, libstdc++ and libwinpthread into the executable to avoid DLL dependencies
+    add_link_options(-static)
 
     # Compatibility flags for legacy code
     add_compile_options(
@@ -72,19 +72,6 @@ if(MINGW)
     # COM support utilities (_com_util::ConvertStringToBSTR, ConvertBSTRToString)
     # are provided by Dependencies/Utility/Utility/comsupp_compat.h as header-only
     # implementations. No library linking required.
-
-    # MinGW-w64 compatibility: Create d3dx8 as an alias to d3dx8d
-    # MinGW-w64 only provides libd3dx8d.a (debug library), not libd3dx8.a
-    # The min-dx8-sdk (dx8.cmake) handles this correctly via d3d8lib interface target,
-    # but for compatibility with direct library references in main executables,
-    # we create an alias so that linking to d3dx8 automatically uses d3dx8d
-    if(NOT TARGET d3dx8)
-        add_library(d3dx8 INTERFACE IMPORTED GLOBAL)
-        set_target_properties(d3dx8 PROPERTIES
-            INTERFACE_LINK_LIBRARIES "d3dx8d"
-        )
-        message(STATUS "Created d3dx8 -> d3dx8d alias for MinGW-w64")
-    endif()
 
     message(STATUS "MinGW-w64 configuration complete")
 endif()

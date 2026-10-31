@@ -12,6 +12,10 @@ if (IS_VS6_BUILD)
     add_subdirectory(MaxSDK)
 endif()
 
+if (MINGW)
+    add_subdirectory(D3DX8)
+endif()
+
 add_subdirectory(Utility)
 add_subdirectory(Bink)
 add_subdirectory(Miles)
